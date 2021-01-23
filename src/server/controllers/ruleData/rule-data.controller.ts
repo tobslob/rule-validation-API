@@ -5,7 +5,7 @@ import { validate } from "@app/data/utilities/validate";
 import { isRuleData } from "./rule-data.validator";
 import { RuleDataDTO, RuleData } from "@app/data/ruleData/rule-data";
 import { jSendFailure } from "@app/data/utilities/util";
-import { conditionalSwitch, extractFields } from "@app/services/rule-data";
+import { dataDetails, conditionalSwitch } from "@app/services/rule-data";
 
 type controllerResponse = RuleData | any;
 
@@ -13,8 +13,22 @@ type controllerResponse = RuleData | any;
 export class RuleDataController extends BaseController<controllerResponse> {
   @httpPost("/", validate(isRuleData))
   async createRuleDataValidation(@request() req: Request, @response() res: Response, @requestBody() body: RuleDataDTO) {
+    let field: any, fieldProp: any;
     const { rule, data } = body;
-    const { field, fieldProp, notObject } = extractFields(res, rule, data);
+
+    if (rule.field.includes(".")) {
+      const splitField = rule.field.split(".");
+      field = Object.keys(data).find(keys => keys === splitField[0]);
+
+      if (typeof data[field] !== "object") {
+        const details = dataDetails(true, rule, data, field);
+        return jSendFailure(res, `field ${rule.field} failed validation.`, 400, details);
+      } else {
+        fieldProp = Object.keys(data[field]).find(keys => keys === splitField[1]);
+      }
+    } else {
+      field = Object.keys(data).find(keys => keys === rule.field);
+    }
 
     if (!field) {
       return jSendFailure(res, `field ${rule.field} is missing from data.`, 400, null);
@@ -22,8 +36,8 @@ export class RuleDataController extends BaseController<controllerResponse> {
 
     const { details, failure } = conditionalSwitch(res, rule, data, field, fieldProp);
 
-    if (failure || notObject) {
-      return jSendFailure(res, `field ${rule.field} failed validation.`, 400, failure || notObject);
+    if (failure) {
+      return jSendFailure(res, `field ${rule.field} failed validation.`, 400, failure);
     } else {
       return this.jSendSuccess(req, res, `field ${rule.field} successfully validated.`, details);
     }

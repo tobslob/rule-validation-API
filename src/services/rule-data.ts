@@ -1,6 +1,5 @@
 import { isRuleDTO, Condition } from "@app/data/ruleData/rule-data";
 import { Response } from "express";
-import { jSendFailure } from "@app/data/utilities/util";
 
 export const dataDetails = (bool: boolean, rule: isRuleDTO, data: any, field: string, fieldProp?: string) => {
   return {
@@ -14,27 +13,7 @@ export const dataDetails = (bool: boolean, rule: isRuleDTO, data: any, field: st
   };
 };
 
-export const extractFields = (res: Response, rule: isRuleDTO, data: any) => {
-  let field, fieldProp, notObject;
-
-  if (rule.field.includes(".")) {
-    fieldProp;
-    const splitField = rule.field.split(".");
-    field = Object.keys(data).find(keys => keys === splitField[0]);
-
-    if (typeof data[field] !== "object") {
-      const details = dataDetails(true, rule, data, field);
-      notObject = jSendFailure(res, `field ${rule.field} failed validation.`, 400, details);
-    } else {
-      fieldProp = Object.keys(data[field]).find(keys => keys === splitField[1]);
-    }
-  } else {
-    field = Object.keys(data).find(keys => keys === rule.field);
-  }
-  return { field, fieldProp, notObject}
-};
-
-export const conditionalSwitch = (_res: Response, rule: isRuleDTO, data: any, field: string, fieldProp: string) => {
+export const conditionalSwitch = (res: Response, rule: isRuleDTO, data: any, field: string, fieldProp: string) => {
   let details, failure;
   switch (rule.condition) {
     case Condition.Eq: {
@@ -106,5 +85,5 @@ export const conditionalSwitch = (_res: Response, rule: isRuleDTO, data: any, fi
     }
   }
 
-  return { details, failure };
+  return { details, failure}
 };
