@@ -2,7 +2,7 @@ import { controller, httpPost, requestBody, request, response } from "inversify-
 import { Request, Response } from "express";
 import { BaseController } from "@app/data/utilities/controllers";
 import { validate } from "@app/data/utilities/validate";
-import { isRuleDate } from "./rule-data.validator";
+import { isRuleData } from "./rule-data.validator";
 import { RuleDataDTO, RuleData } from "@app/data/ruleData/rule-data";
 import { jSendFailure } from "@app/data/utilities/util";
 import { dataDetails, conditionalSwitch } from "@app/services/rule-data";
@@ -11,7 +11,7 @@ type controllerResponse = RuleData | any;
 
 @controller("/validate-rule")
 export class RuleDataController extends BaseController<controllerResponse> {
-  @httpPost("/", validate(isRuleDate))
+  @httpPost("/", validate(isRuleData))
   async createRuleDataValidation(@request() req: Request, @response() res: Response, @requestBody() body: RuleDataDTO) {
     let field: any, fieldProp: any;
     const { rule, data } = body;

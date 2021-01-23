@@ -9,7 +9,7 @@ const isRule = Joi.object({
   condition_value: Joi.any().required()
 });
 
-export const isRuleDate = Joi.object({
+export const isRuleData = Joi.object({
   rule: isRule,
   data: any().required()
 });
