@@ -27,6 +27,6 @@ export class Controller<T> {
 
 export class BaseController<T> extends Controller<T> {
   constructor() {
-    super(Log)
+    super(Log);
   }
 }

@@ -5,7 +5,14 @@ import { getRouteInfo, InversifyExpressServer } from "inversify-express-utils";
 import container from "@app/common/config/ioc";
 import { Application, Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
-import { welcomeMessage, details, jSendError, jSendSuccess, notFoundError, internalServerError } from "@app/data/utilities/util";
+import {
+  welcomeMessage,
+  details,
+  jSendError,
+  jSendSuccess,
+  notFoundError,
+  internalServerError
+} from "@app/data/utilities/util";
 
 dotenv.config();
 
@@ -27,18 +34,18 @@ export class App {
     this.server.setErrorConfig((app: Application) => {
       // expose index endpoint
       app.get("/", (req: Request, res: Response) => {
-        jSendSuccess(req, res, welcomeMessage, details)
+        jSendSuccess(req, res, welcomeMessage, details);
       });
 
       // register 404 route handler
       app.use((_req, res, _next) => {
-        jSendError(res, notFoundError, 404, null)
+        jSendError(res, notFoundError, 404, null);
       });
 
       // handle all error
       app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
         if (err) {
-          jSendError(res, internalServerError, 404, err.message)
+          jSendError(res, internalServerError, 404, err.message);
         }
         return next();
       });
